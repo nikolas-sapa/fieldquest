@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f6f2" />
+    <meta name="description" content="Get one small, locally generated reason to step outside." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./fieldquest.svg" type="image/svg+xml" />
+    <title>FieldQuest · Take one outside</title>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="FieldQuest home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M7 24.8C7 15 13.3 8 25 6.5c-.4 11.3-7.2 18-18 18.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="M7.7 24.2c3-5.5 7.7-9.8 14-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span>fieldquest</span>
+        </a>
+        <div class="topbar-note"><span class="status-dot" aria-hidden="true"></span>Made to leave your phone behind</div>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow"><span class="eyebrow-line"></span>A little nudge, then out you go</p>
+          <h1 id="page-title">One quest.<br /><em>Then pocket.</em></h1>
+          <p class="intro-copy">A tiny outdoor mission, dreamed up on your device. No maps, no feeds, no need to keep looking at your phone.</p>
+        </section>
+
+        <section class="quest-card" aria-labelledby="setup-title">
+          <div class="card-heading">
+            <div>
+              <p class="step-label">01 <span>/ 02</span></p>
+              <h2 id="setup-title">What feels right today?</h2>
+            </div>
+            <span class="card-spark" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none">
+                <path d="M10 35c1-13 10-22 28-24-1 18-11 27-28 24Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M12 33c4-7 11-13 20-18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                <path d="M7 13h8M11 9v8M34 7h7M37.5 3.5v7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+              </svg>
+            </span>
+          </div>
+
+          <fieldset class="choice-group">
+            <legend>How much time have you got?</legend>
+            <div class="time-options">
+              <label class="choice-card">
+                <input type="radio" name="duration" value="5" checked />
+                <span class="choice-main">5 <small>min</small></span>
+                <span class="choice-sub">A quick breather</span>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="duration" value="10" />
+                <span class="choice-main">10 <small>min</small></span>
+                <span class="choice-sub">A small wander</span>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="duration" value="20" />
+                <span class="choice-main">20 <small>min</small></span>
+                <span class="choice-sub">Room to roam</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="choice-group mood-group">
+            <legend>Pick a mood</legend>
+            <div class="mood-options">
+              <label class="mood-choice"><input type="radio" name="mood" value="calm" checked /><span>Calm</span></label>
+              <label class="mood-choice"><input type="radio" name="mood" value="curious" /><span>Curious</span></label>
+              <label class="mood-choice"><input type="radio" name="mood" value="energetic" /><span>Energetic</span></label>
+            </div>
+          </fieldset>
+
+          <div class="model-panel">
+            <div class="model-copy">
+              <span class="model-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5 17 6.3v7.4L10 17.5 3 13.7V6.3l7-3.8Z" stroke="currentColor" stroke-width="1.35" /><path d="m6.7 8 3.3-1.8L13.3 8v4l-3.3 1.8L6.7 12V8Z" stroke="currentColor" stroke-width="1.35" /></svg>
+              </span>
+              <div><strong>Local AI</strong><span id="model-description">One-time model weights · 272 MB + runtime</span></div>
+            </div>
+            <button class="button button-quiet" id="load-model" type="button">Load model</button>
+          </div>
+          <div class="progress-track" id="progress-wrap" role="progressbar" aria-label="Local model download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><div class="progress-fill" id="progress-fill"></div></div>
+          <p class="status-message" id="model-status" aria-live="polite">Your choices stay on this device. The model downloads once, then runs here.</p>
+
+          <button class="button button-primary generate-button" id="generate-quest" type="button" disabled>
+            <span>Make my quest</span>
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11M10 5l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+
+          <div class="result" id="result" hidden aria-live="polite">
+            <div class="result-heading"><span class="step-label">02 <span>/ 02</span></span><span class="result-tag">Your field note</span></div>
+            <p class="quest-text" id="quest-text"></p>
+            <div class="result-footer">
+              <span class="quest-time" id="quest-time"></span>
+              <button class="button button-text" id="done-button" type="button">I’m heading out <span aria-hidden="true">↗</span></button>
+            </div>
+          </div>
+
+          <div class="complete-note" id="complete-note" hidden>
+            <span class="complete-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12.5 4.5 4.5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+            <div><strong>Good. Let the rest happen out there.</strong><span>Keep the phone away for a little while.</span></div>
+          </div>
+        </section>
+
+        <aside class="safety-note"><span class="safety-icon" aria-hidden="true">i</span><p>Choose a familiar, public place. Stay on paths, respect local rules, and trust your own read of the weather and surroundings.</p></aside>
+      </main>
+
+      <footer class="footer"><span>Small adventures count.</span><a href="https://huggingface.co/onnx-community/SmolLM2-360M-Instruct-ONNX" target="_blank" rel="noreferrer">About the open model <span aria-hidden="true">↗</span></a></footer>
+    </div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

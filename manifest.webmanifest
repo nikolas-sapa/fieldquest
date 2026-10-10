@@ -1,0 +1,18 @@
+{
+  "name": "FieldQuest · Take one outside",
+  "short_name": "FieldQuest",
+  "description": "One locally generated reason to step outside.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f2",
+  "theme_color": "#f4f6f2",
+  "icons": [
+    {
+      "src": "./fieldquest.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
