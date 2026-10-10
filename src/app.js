@@ -190,7 +190,7 @@ doneButton.addEventListener("click", () => {
 
 if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost")) {
   window.addEventListener("load", () => {
-    const base = document.querySelector('link[rel="manifest"]')?.href ?? window.location.href;
+    const base = new URL(import.meta.env.BASE_URL, window.location.href);
     const workerUrl = new URL("sw.js", base);
     navigator.serviceWorker.register(workerUrl).catch(() => {
       setStatus("Offline app-shell setup failed. The local quest generator still works while this page is open.", "error");
