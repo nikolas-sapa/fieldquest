@@ -9,24 +9,24 @@ Build a tiny outdoor quest generator for people who want a reason to step away f
 1. Open FieldQuest on a phone or desktop.
 2. Choose 5, 10, or 20 minutes and a calm, curious, or energetic mood.
 3. Start the local model. The first run downloads model assets; later runs use browser cache.
-4. Generate one short quest, read it, then leave the device in a pocket.
+4. The local model creates a brief nature detail matched to the selected mood and time. FieldQuest places it into a short, fixed-format outdoor quest, which the user reads once and then leaves in a pocket.
 5. Optionally mark the quest complete when back.
 
 ## Architecture
 
 - Static mobile-first PWA: semantic HTML, CSS, and JavaScript modules.
-- Transformers.js runs `onnx-community/SmolLM2-135M-Instruct-ONNX` in the browser with `dtype: "q4"` (181 MB model file). Expose download/inference status.
+- Transformers.js runs `onnx-community/SmolLM2-360M-Instruct-ONNX` in the browser with `dtype: "q4f16"` (272 MB weight file), pinned to revision `fe7c7db4c8921c9e3fa1c65cfd296fb3b1b1a8f9`. Expose download/inference status and describe runtime assets separately.
 - No server, account, GPS, camera, telemetry, or user-content persistence.
 - App shell is cached by a service worker. Model downloads are managed by Transformers.js browser cache; clear instructions explain that model files need one successful online load before offline use.
 - If model loading or inference fails, show a clear retry path. Do not fabricate an AI result or send user input to a remote service.
-- Prompt asks for one short, accessible, weather-independent, low-risk observation or movement task. Safety copy tells users to stay in public, familiar places, respect access rules, and stop if conditions feel unsafe.
+- Prompt asks for only a 2-7-word nature observation. App supplies the activity and duration wording from fixed templates. It discards model text outside the expected short phrase or matching the safety filter. Safety copy tells users to stay in public, familiar places, respect access rules, and stop if conditions feel unsafe.
 
 ## Success criteria
 
-- User can generate one distinct outdoor quest for all 9 combinations of time and mood.
+- User can generate distinct outdoor quests for all 9 combinations of time and mood; at least 6/9 quest strings differ.
 - After model assets load once, quest generation works with network disabled in a supported browser.
-- 90% of the 9 acceptance combinations return a quest under 20 seconds on the reference laptop; hard failures remain clearly reported.
-- Quest text is under 45 words and contains no location request or instruction to enter restricted/unsafe areas.
+- All 9 acceptance combinations return a quest under 20 seconds on the reference laptop; hard failures remain clearly reported.
+- At least 8/9 observation phrases are natural, concrete, and grammatically fit the fixed quest wrapper; all quest texts are under 45 words and contain no location request or instruction to enter restricted/unsafe areas.
 - App shell renders at 360px viewport width without horizontal scrolling.
 
 ## Non-goals
@@ -42,7 +42,7 @@ Local, swappable open weights make the prompt generation private and usable afte
 
 ## Known constraints
 
-The browser model download is 181 MB and first inference may be slow. Browser cache eviction can require downloading again. The PWA must communicate both constraints before users start.
+The quantized model weight file is 272 MB; the app also loads runtime and tokenizer assets. First inference may be slow. Browser cache eviction can require downloading again. The PWA must communicate these constraints before users start.
 
 ## Submission
 
