@@ -146,17 +146,20 @@ async function generateQuest() {
 
   try {
     const activeGenerator = await loadModel();
-    const output = await activeGenerator(makeMessages(minutes, mood), {
-      max_new_tokens: 24,
-      do_sample: true,
-      temperature: 0.6,
-      top_p: 0.85,
-      repetition_penalty: 1.1,
-    });
-    const rawObservation = extractText(output);
-    const observation = cleanObservation(rawObservation);
+    let observation = "";
+    for (let attempt = 0; attempt < 3 && !observation; attempt += 1) {
+      const output = await activeGenerator(makeMessages(minutes, mood), {
+        max_new_tokens: 24,
+        do_sample: true,
+        temperature: 0.6,
+        top_p: 0.85,
+        repetition_penalty: 1.1,
+      });
+      observation = cleanObservation(extractText(output));
+      if (!observation && attempt < 2) setStatus("Shaping that into a tiny nature detail…", "loading");
+    }
     if (!observation) {
-      throw new Error("The model returned text outside the observation format.");
+      throw new Error("The model did not return a usable observation after three tries.");
     }
     const quest = composeQuest(observation, minutes, mood);
 
