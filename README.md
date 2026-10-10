@@ -19,7 +19,7 @@ Open the local address shown by Vite. Choose a time and mood, then load the mode
 - The model revision is pinned to `fe7c7db4c8921c9e3fa1c65cfd296fb3b1b1a8f9` for repeatable downloads.
 - Time and mood stay in memory in the page. They are used in local inference and are not sent to a FieldQuest server. The app has no server, account, analytics, GPS, or camera access.
 - The app shell can load offline after it has been visited once. Model generation works offline after all model assets have loaded and remain in browser cache.
-- A generated quest is displayed as plain text. If the local model fails or returns text matching the safety filter, FieldQuest reports the failure instead of showing a made-up quest.
+- A generated quest is displayed as plain text. If the local model fails or returns text outside the short phrase format or matching the blocked-term list, FieldQuest reports the failure instead of showing a made-up quest. The blocked-term list is a narrow guardrail, not a guarantee that every model phrase is safe.
 
 ## Model and third-party credits
 
