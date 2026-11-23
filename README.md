@@ -34,4 +34,6 @@ This repository's original application code is MIT licensed. Third-party assets 
 
 ## Verification
 
+`npm test` runs unit tests for quest output parsing, the phrase-format and blocked-term checks, and quest composition. CI runs them with the build on every pull request.
+
 Release checks and observed browser/device results are in [the test plan](docs/superpowers/specs/2026-10-10-fieldquest-test-plan.md). Do not assume offline model behavior on a browser/device combination that has not been tested.

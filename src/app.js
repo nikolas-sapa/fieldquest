@@ -1,12 +1,9 @@
 import "../styles.css";
+import { ALLOWED_MINUTES, ALLOWED_MOODS, cleanObservation, composeQuest, extractText, makeMessages } from "./quest.js";
 
 const MODEL_ID = "onnx-community/SmolLM2-360M-Instruct-ONNX";
 const MODEL_REVISION = "fe7c7db4c8921c9e3fa1c65cfd296fb3b1b1a8f9";
 const MODEL_SIZE = "272 MB";
-const ALLOWED_MINUTES = new Set(["5", "10", "20"]);
-const ALLOWED_MOODS = new Set(["calm", "curious", "energetic"]);
-const UNSAFE_TERMS = /\b(?:cliff|ledge|railway|railroad|train tracks|highway|motorway|traffic|trespass|restricted area|private property|construction site|climb|swim|waterfall|river|road|street)\b/i;
-const LOCATION_REQUEST = /\b(?:share|enter|provide|tell|send)\b.{0,32}\b(?:address|gps|location|coordinates|postcode)\b/i;
 
 const loadButton = document.querySelector("#load-model");
 const generateButton = document.querySelector("#generate-quest");
@@ -83,51 +80,6 @@ function selectedValue(name) {
   return document.querySelector(`input[name="${name}"]:checked`)?.value;
 }
 
-function makeMessages(minutes, mood) {
-  const recent = recentQuests.length > 0
-    ? `Choose a different detail from these recent ones: ${recentQuests.join(" | ")}`
-    : "";
-
-  return [
-    {
-      role: "system",
-      content: "You notice small things in nature. Complete the phrase after 'Notice how'. Return exactly one concrete present-tense observation fragment of 2 to 7 common words, with a subject and verb. No task, place, person, brand, story, or extra words. Example: 'sunlight moves across leaves'.",
-    },
-    {
-      role: "user",
-      content: `Complete this phrase for someone taking a ${minutes}-minute ${mood} outdoor break: "Notice how ___." Choose an everyday nature detail someone can observe where they are. ${recent} Return only the missing words.`,
-    },
-  ];
-}
-
-function extractText(output) {
-  const generated = output?.[0]?.generated_text;
-  const content = Array.isArray(generated) ? generated.at(-1)?.content : generated;
-  return typeof content === "string" ? content.trim().replace(/^assistant\s*:?\s*/i, "").replace(/^['"`]+|['"`]+$/g, "") : "";
-}
-
-function cleanObservation(text) {
-  const normalized = text.replace(/\s+/g, " ").trim().replace(/^notice how\s+/i, "");
-  const observation = normalized.replace(/[.!?]+$/, "").trim();
-  const words = observation.split(" ");
-  if (words.length < 2 || words.length > 7 || UNSAFE_TERMS.test(observation) || LOCATION_REQUEST.test(observation)) return "";
-  return observation.replace(/^[A-Z]/, (letter) => letter.toLowerCase());
-}
-
-function composeQuest(observation, minutes, mood) {
-  const openings = {
-    calm: "Pause for a moment and notice how",
-    curious: "Look twice and notice how",
-    energetic: "Move at a comfortable pace and notice how",
-  };
-  const endings = {
-    "5": "Find one more small detail, then pocket your phone.",
-    "10": "Look for one more sign of it, then pocket your phone.",
-    "20": "Stay a little longer and notice a second detail, then pocket your phone.",
-  };
-  return `${openings[mood]} ${observation}. ${endings[minutes]}`;
-}
-
 async function generateQuest() {
   if (!generator || isGenerating) return;
   const minutes = selectedValue("duration");
@@ -148,7 +100,7 @@ async function generateQuest() {
     const activeGenerator = await loadModel();
     let observation = "";
     for (let attempt = 0; attempt < 3 && !observation; attempt += 1) {
-      const output = await activeGenerator(makeMessages(minutes, mood), {
+      const output = await activeGenerator(makeMessages(minutes, mood, recentQuests), {
         max_new_tokens: 24,
         do_sample: true,
         temperature: 0.6,
